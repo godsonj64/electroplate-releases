@@ -14,5 +14,4 @@ AI-driven desktop app generator.
 Installers are currently unsigned — macOS Gatekeeper and Windows SmartScreen may
 warn on first launch (open anyway).
 
-> This repository hosts published builds only. The source code is maintained in a
-> separate private repository.
+

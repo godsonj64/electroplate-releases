@@ -88,51 +88,27 @@
     });
   });
 
-  // Radiance: a damped spring chases a slow drifting path, or the cursor.
+  // Radiance: a band of lit dots drifting slowly through the dot field.
   const hero = document.querySelector('.hero');
   const radiance = document.querySelector('[data-radiance]');
   if (hero && radiance) {
-    const drift = (t) => {
+    const place = (t) => {
       const w = hero.clientWidth;
       const h = Math.min(hero.clientHeight, 920);
-      return [w * (0.5 + 0.27 * Math.sin(t / 5200)), h * (0.34 + 0.11 * Math.sin(t / 3700 + 1.3))];
-    };
-    const place = (x, y) => {
-      radiance.style.setProperty('--x', `${x.toFixed(1)}px`);
-      radiance.style.setProperty('--y', `${y.toFixed(1)}px`);
+      radiance.style.setProperty('--x', `${(w * (0.5 + 0.3 * Math.sin(t / 7000))).toFixed(1)}px`);
+      radiance.style.setProperty('--y', `${(h * (0.34 + 0.1 * Math.sin(t / 5100 + 1.3))).toFixed(1)}px`);
     };
     if (reduceMotion) {
-      const [x, y] = drift(0);
-      place(x, y);
+      place(0);
     } else {
-      let [x, y] = drift(performance.now());
-      let vx = 0;
-      let vy = 0;
-      let pointer = null;
-      let last = 0;
       let running = false;
-      const STIFFNESS = 14;
-      const DAMPING = 6.4;
       const frame = (now) => {
         if (!running) return;
-        const dt = Math.min(0.05, last ? (now - last) / 1000 : 0.016);
-        last = now;
-        const [tx, ty] = pointer || drift(now);
-        vx += ((tx - x) * STIFFNESS - vx * DAMPING) * dt;
-        vy += ((ty - y) * STIFFNESS - vy * DAMPING) * dt;
-        x += vx * dt;
-        y += vy * dt;
-        place(x, y);
+        place(now);
         window.requestAnimationFrame(frame);
       };
-      const start = () => { if (!running) { running = true; last = 0; window.requestAnimationFrame(frame); } };
+      const start = () => { if (!running) { running = true; window.requestAnimationFrame(frame); } };
       const stop = () => { running = false; };
-      hero.addEventListener('pointermove', (event) => {
-        if (event.pointerType !== 'mouse') return;
-        const rect = hero.getBoundingClientRect();
-        pointer = [event.clientX - rect.left, event.clientY - rect.top];
-      });
-      hero.addEventListener('pointerleave', () => { pointer = null; });
       let inView = true;
       const sync = () => (inView && !document.hidden ? start() : stop());
       if ('IntersectionObserver' in window) {

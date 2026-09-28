@@ -43,7 +43,7 @@
   applyPlatform();
 
   // Keep version, notes and installer links on the newest release without
-  // editing the page each time. The static 1.16.0 links stay if this fails.
+  // editing the page each time. The static links stay if this fails.
   const isGithub = (url) => typeof url === 'string' && url.startsWith('https://github.com/godsonj64/electroplate-releases/');
   fetch(RELEASES_API, { headers: { Accept: 'application/vnd.github+json' } })
     .then((response) => (response.ok ? response.json() : Promise.reject(new Error(String(response.status)))))

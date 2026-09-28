@@ -147,11 +147,11 @@ ol, ul { margin: 0; padding: 0; list-style: none; }
 /* The dot field from the app's Easy mode description box, at hero scale. */
 .hero-grid {
   position: absolute; z-index: -1; inset: 0; pointer-events: none;
-  background-image: radial-gradient(rgba(255, 255, 255, .34) 1px, transparent 1.5px);
-  background-size: 18px 18px;
+  background-image: radial-gradient(rgba(255, 255, 255, .2) 1px, transparent 1.5px);
+  background-size: 28px 28px;
   background-position: center top;
-  -webkit-mask-image: radial-gradient(62% 48% at 50% 28%, #000 10%, transparent 72%);
-  mask-image: radial-gradient(62% 48% at 50% 28%, #000 10%, transparent 72%);
+  -webkit-mask-image: radial-gradient(46% 34% at 50% 26%, #000 0%, transparent 70%);
+  mask-image: radial-gradient(46% 34% at 50% 26%, #000 0%, transparent 70%);
 }
 .hero-copy {
   max-width: 1280px; margin: 0 auto; padding: 0 var(--gutter);

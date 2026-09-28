@@ -142,9 +142,7 @@ ol, ul { margin: 0; padding: 0; list-style: none; }
 }
 .hero-glow {
   position: absolute; z-index: -1; inset: 0; pointer-events: none;
-  background:
-    radial-gradient(38% 30% at 50% 58%, rgba(248, 80, 29, .28), transparent 70%),
-    radial-gradient(30% 24% at 78% 70%, rgba(255, 159, 69, .14), transparent 70%);
+  background: radial-gradient(38% 30% at 50% 58%, rgba(248, 80, 29, .28), transparent 70%);
 }
 .hero-grid {
   position: absolute; z-index: -1; inset: 0; pointer-events: none; opacity: .5;

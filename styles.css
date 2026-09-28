@@ -147,11 +147,33 @@ ol, ul { margin: 0; padding: 0; list-style: none; }
 /* The dot field from the app's Easy mode description box, at hero scale. */
 .hero-grid {
   position: absolute; z-index: -1; inset: 0; pointer-events: none;
-  background-image: radial-gradient(rgba(255, 255, 255, .2) 1px, transparent 1.5px);
-  background-size: 28px 28px;
-  background-position: center top;
-  -webkit-mask-image: radial-gradient(46% 34% at 50% 26%, #000 0%, transparent 70%);
-  mask-image: radial-gradient(46% 34% at 50% 26%, #000 0%, transparent 70%);
+  background-image: radial-gradient(rgba(255, 255, 255, .26) 1px, transparent 1.5px);
+  background-size: 22px 22px;
+  background-position: 0 0;
+  -webkit-mask-image: radial-gradient(56% 42% at 50% 27%, #000 5%, transparent 72%);
+  mask-image: radial-gradient(56% 42% at 50% 27%, #000 5%, transparent 72%);
+}
+
+/* A light that drifts through the dot field on a spring, lighting the dots
+   it passes. app.js moves it; it stays off-screen without JavaScript. */
+.hero-radiance {
+  --x: -2000px; --y: -2000px;
+  position: absolute; z-index: -1; inset: 0; pointer-events: none; overflow: hidden;
+}
+.radiance-glow, .radiance-dots { position: absolute; left: 0; top: 0; will-change: transform; }
+.radiance-glow {
+  width: 820px; height: 820px;
+  transform: translate3d(calc(var(--x) - 410px), calc(var(--y) - 410px), 0);
+  background: radial-gradient(closest-side, rgba(255, 106, 43, .15), rgba(248, 80, 29, .06) 48%, transparent 100%);
+}
+.radiance-dots {
+  width: 520px; height: 520px;
+  transform: translate3d(calc(var(--x) - 260px), calc(var(--y) - 260px), 0);
+  background-image: radial-gradient(rgba(255, 150, 80, .72) 1px, transparent 1.6px);
+  background-size: 22px 22px;
+  background-position: calc(260px - var(--x)) calc(260px - var(--y));
+  -webkit-mask-image: radial-gradient(closest-side, #000 0%, rgba(0, 0, 0, .4) 45%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 0%, rgba(0, 0, 0, .4) 45%, transparent 100%);
 }
 .hero-copy {
   max-width: 1280px; margin: 0 auto; padding: 0 var(--gutter);

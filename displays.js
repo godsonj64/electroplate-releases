@@ -5,7 +5,8 @@
  * one state's shade. One WebGL context draws every tile in turn; drawing
  * pauses off screen and in a hidden tab, and holds a still frame for reduced
  * motion. Hovering a tile sends a ripple out of its corner, as a written file
- * does in the app.
+ * does in the app. Changing a tile's data-shade cross-fades it to the new
+ * state's shade, as the hero's build readout does stage by stage.
  */
 (() => {
   const tiles = Array.from(document.querySelectorAll('[data-shade]'));
@@ -128,10 +129,35 @@
     canvas.className = 'shade-led';
     canvas.setAttribute('aria-hidden', 'true');
     tile.prepend(canvas);
-    const d = { tile, canvas, ctx: canvas.getContext('2d'), tone, palette: PALETTES[tone].map(rgb), seed: i * 1.37 + 0.4, time: 7 + i * 5.3, pulse: 0, pulseStart: 0, w: 1, h: 1, dpr: 1 };
-    tile.addEventListener('pointerenter', () => { if (!still.matches) { d.pulseStart = performance.now(); start(); } });
+    const d = { tile, canvas, ctx: canvas.getContext('2d'), tone, palette: PALETTES[tone].map(rgb), from: null, to: null, fadeStart: 0,
+      energy: TONES[tone].energy, halftone: TONES[tone].halftone, seed: i * 1.37 + 0.4, time: 7 + i * 5.3, pulse: 0, pulseStart: 0, w: 1, h: 1, dpr: 1, visible: false };
+    if (!tile.hasAttribute('data-shade-still')) {
+      tile.addEventListener('pointerenter', () => { if (!still.matches) { d.pulseStart = performance.now(); start(); } });
+    }
+    new MutationObserver(() => retone(d, tile.dataset.shade)).observe(tile, { attributes: true, attributeFilter: ['data-shade'] });
     return d;
   });
+
+  // A new state fades in over FADE_MS: colours, brightness and halftone together.
+  const FADE_MS = 650;
+  function retone(d, tone) {
+    if (!TONES[tone] || tone === d.tone) return;
+    d.from = { palette: d.palette, energy: d.energy, halftone: d.halftone };
+    d.to = { palette: PALETTES[tone].map(rgb), energy: TONES[tone].energy, halftone: TONES[tone].halftone };
+    d.tone = tone;
+    d.fadeStart = performance.now();
+    start();
+  }
+  function fade(d, now) {
+    if (!d.fadeStart) return;
+    const t = still.matches ? 1 : Math.min(1, (now - d.fadeStart) / FADE_MS);
+    const e = 1 - Math.pow(1 - t, 3);
+    const mix = (a, b) => a + (b - a) * e;
+    d.palette = d.to.palette.map((c, i) => c.map((v, j) => mix(d.from.palette[i][j], v)));
+    d.energy = mix(d.from.energy, d.to.energy);
+    d.halftone = mix(d.from.halftone, d.to.halftone);
+    if (t >= 1) d.fadeStart = 0;
+  }
 
   function measure() {
     for (const d of displays) {
@@ -162,8 +188,8 @@
     gl.uniform1f(u.u_pitch, Math.max(3, Math.round(PITCH * d.dpr)));
     gl.uniform1f(u.u_time, d.time);
     gl.uniform1f(u.u_seed, d.seed);
-    gl.uniform1f(u.u_gain, TONES[d.tone].energy);
-    gl.uniform1f(u.u_halftone, TONES[d.tone].halftone);
+    gl.uniform1f(u.u_gain, d.energy);
+    gl.uniform1f(u.u_halftone, d.halftone);
     gl.uniform1f(u.u_pulse, d.pulse);
     gl.uniform2f(u.u_corner, d.w, d.h);
     gl.uniform2f(u.u_radii, rx, ry);
@@ -184,13 +210,15 @@
     const dt = last ? Math.min(0.1, (now - last) / 1000) : 0;
     last = now;
     for (const d of displays) {
+      if (!d.visible) continue;
+      fade(d, now);
       if (!still.matches) d.time += dt * TONES[d.tone].speed;
       const age = d.pulseStart ? (now - d.pulseStart) / 1400 : 1;
       d.pulse = age < 1 ? 1 - (1 - Math.pow(1 - age, 3)) : 0;
       if (age >= 1) d.pulseStart = 0;
       draw(d);
     }
-    if (still.matches && !displays.some((d) => d.pulseStart)) running = false;
+    if (still.matches && !displays.some((d) => d.pulseStart || d.fadeStart)) running = false;
   }
   function start() {
     if (running || !inView) return;
@@ -199,9 +227,16 @@
   }
 
   measure();
-  new ResizeObserver(() => { measure(); displays.forEach(draw); }).observe(tiles[0].parentElement);
-  const section = tiles[0].closest('section') || tiles[0].parentElement;
-  new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; if (inView) start(); }, { rootMargin: '120px 0px' }).observe(section);
+  const resize = new ResizeObserver(() => { measure(); displays.filter((d) => d.visible).forEach(draw); });
+  const seen = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      const d = displays.find((x) => x.tile === entry.target);
+      if (d) d.visible = entry.isIntersecting;
+    }
+    inView = displays.some((d) => d.visible);
+    if (inView) start();
+  }, { rootMargin: '120px 0px' });
+  for (const d of displays) { resize.observe(d.tile); seen.observe(d.tile); }
   document.addEventListener('visibilitychange', start);
   still.addEventListener('change', start);
 })();

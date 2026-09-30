@@ -324,9 +324,10 @@
       cells.forEach((cell, i) => cell.classList.toggle('on', i < lit));
     };
 
-    if (reduceMotion) {
-      render(total - 1);
-    } else {
+    // Until the loop runs (and throughout, for reduced motion) the readout shows
+    // the finished build, with its meter lit to match.
+    render(total - 1);
+    if (!reduceMotion) {
       let running = false; let origin = 0; let paused = 0;
       const frame = (now) => {
         if (!running) return;

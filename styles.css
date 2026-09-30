@@ -142,7 +142,8 @@ ol, ul { margin: 0; padding: 0; list-style: none; }
 }
 .hero-glow {
   position: absolute; z-index: -1; inset: 0; pointer-events: none;
-  background: radial-gradient(38% 30% at 50% 58%, rgba(248, 80, 29, .28), transparent 70%);
+  /* Sized in px, not %, so it stays a soft oval on a tall, narrow phone. */
+  background: radial-gradient(460px 420px at 50% 58%, rgb(248 80 29 / 0.28) 0%, rgb(248 80 29 / 0.241) 12%, rgb(248 80 29 / 0.196) 24%, rgb(248 80 29 / 0.148) 36%, rgb(248 80 29 / 0.104) 48%, rgb(248 80 29 / 0.064) 60%, rgb(248 80 29 / 0.034) 72%, rgb(248 80 29 / 0.013) 84%, rgb(248 80 29 / 0.0) 100%);
 }
 /* The dot field from the app's Easy mode description box, at hero scale. */
 .hero-grid {
@@ -245,8 +246,12 @@ ol, ul { margin: 0; padding: 0; list-style: none; }
   perspective: 2200px;
 }
 .hero-stage::before {
-  content: ''; position: absolute; z-index: -1; left: 10%; right: 10%; top: 12%; bottom: -4%;
-  background: var(--molten); filter: blur(90px); opacity: .34; border-radius: 50%;
+  /* A radial halo rather than a blurred block: smooth at any width, and no
+     90px blur filter for a phone's GPU to rasterise. It is larger than the
+     window so the warmth shows around its sides and foot. */
+  content: ''; position: absolute; z-index: -1; left: 50%; top: 52%;
+  width: min(1600px, 170%); aspect-ratio: 16 / 10; transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgb(255 106 43 / 0.5) 0%, rgb(255 106 43 / 0.43) 12%, rgb(255 106 43 / 0.35) 24%, rgb(255 106 43 / 0.265) 36%, rgb(255 106 43 / 0.185) 48%, rgb(255 106 43 / 0.115) 60%, rgb(255 106 43 / 0.06) 72%, rgb(255 106 43 / 0.022) 84%, rgb(255 106 43 / 0.0) 100%);
 }
 .window {
   margin: 0; overflow: hidden; border-radius: 14px;
@@ -405,9 +410,10 @@ ol, ul { margin: 0; padding: 0; list-style: none; }
 /* ---------- Showcase (dark) ---------- */
 .showcase { position: relative; background: var(--ink-1); color: var(--ink-text); overflow: hidden; isolation: isolate; }
 .showcase::before {
-  content: ''; position: absolute; z-index: -1; left: 50%; top: 58%; width: 80%; height: 60%;
+  /* A fixed 3:2 oval, so a tall section on a phone does not stretch it into a column. */
+  content: ''; position: absolute; z-index: -1; left: 50%; top: 58%; width: min(1100px, 160%); aspect-ratio: 3 / 2;
   transform: translate(-50%, -50%);
-  background: radial-gradient(closest-side, rgba(255, 106, 43, .22), transparent);
+  background: radial-gradient(closest-side, rgb(255 106 43 / 0.22) 0%, rgb(255 106 43 / 0.189) 12%, rgb(255 106 43 / 0.154) 24%, rgb(255 106 43 / 0.117) 36%, rgb(255 106 43 / 0.081) 48%, rgb(255 106 43 / 0.051) 60%, rgb(255 106 43 / 0.026) 72%, rgb(255 106 43 / 0.01) 84%, rgb(255 106 43 / 0.0) 100%);
 }
 .showcase .index { color: var(--ink-muted); }
 .showcase-head { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 28px 40px; }
@@ -484,7 +490,7 @@ ol, ul { margin: 0; padding: 0; list-style: none; }
 }
 .quote::before {
   content: ''; position: absolute; z-index: -1; inset: 0;
-  background: radial-gradient(46% 60% at 50% 100%, rgba(248, 80, 29, .28), transparent 70%);
+  background: radial-gradient(620px 340px at 50% 100%, rgb(248 80 29 / 0.28) 0%, rgb(248 80 29 / 0.241) 12%, rgb(248 80 29 / 0.196) 24%, rgb(248 80 29 / 0.148) 36%, rgb(248 80 29 / 0.104) 48%, rgb(248 80 29 / 0.064) 60%, rgb(248 80 29 / 0.034) 72%, rgb(248 80 29 / 0.013) 84%, rgb(248 80 29 / 0.0) 100%);
 }
 .quote-mark { margin: 0 auto 36px; width: 56px; height: 56px; filter: drop-shadow(0 10px 30px rgba(248, 80, 29, .5)); }
 .quote blockquote { margin: 0 auto; max-width: 980px; }
@@ -733,6 +739,10 @@ html.sheet-open { overflow: hidden; }
   .window-status { font-size: 9.5px; }
   .proof-note { position: relative; left: auto; bottom: auto; margin: 16px 0 0; width: fit-content; }
   .build-readout { position: relative; top: auto; right: auto; width: min(296px, 100%); margin: 0 auto 18px; }
+  /* On a narrow screen the glows cover more of the page, so they are lighter. */
+  .hero-glow { opacity: .7; }
+  .hero-stage::before { opacity: .55; }
+  .showcase::before, .quote::before { opacity: .7; }
   .download-options { grid-template-columns: minmax(0, 1fr); }
   .download-option { min-height: 0; }
   .download-option.is-recommended::after { left: auto; right: 58px; top: 22px; bottom: auto; }

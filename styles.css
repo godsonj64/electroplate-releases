@@ -264,6 +264,7 @@ ol, ul { margin: 0; padding: 0; list-style: none; }
   font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--flame);
 }
 .window-light .window-status { color: var(--accent-ink); }
+.window-status-good { color: #30d158; }
 .window-status i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: pulse 1.6s ease-in-out infinite; }
 @keyframes pulse { 50% { opacity: .25; transform: scale(.8); } }
 

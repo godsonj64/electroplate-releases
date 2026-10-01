@@ -171,6 +171,14 @@ ol, ul { margin: 0; padding: 0; list-style: none; }
   -webkit-mask-image: radial-gradient(closest-side, #000 0%, rgba(0, 0, 0, .4) 45%, transparent 100%);
   mask-image: radial-gradient(closest-side, #000 0%, rgba(0, 0, 0, .4) 45%, transparent 100%);
 }
+/* The LED wall (hero-led.js) replaces the CSS dot field, the drifting
+   radiance and the flat glow when WebGL is there to draw it. */
+.hero-led { position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.hero.has-led .hero-grid, .hero.has-led .hero-radiance, .hero.has-led .hero-glow { display: none; }
+/* Over the lit wall the outline button needs its own dark fill to stay legible. */
+.hero.has-led .hero-actions .button-ghost { background: rgba(11, 11, 14, .86); }
+.hero.has-led .hero-actions .button-ghost:hover { background: rgba(28, 28, 34, .92); }
+
 .hero-copy {
   max-width: 1280px; margin: 0 auto; padding: 0 var(--gutter);
   display: flex; flex-direction: column; align-items: center; text-align: center;
